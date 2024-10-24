@@ -2,6 +2,7 @@ import os
 import subprocess
 import zipfile
 import psutil
+import compress as c
 
 def track_process(process_name):
     print(f"Tracking {process_name} process...")
@@ -15,14 +16,6 @@ def track_process(process_name):
         print(f"{process_name} closed.")
     except Exception as e:
         print(f"An error occurred: {e}")
-
-def zip_folder(folder_path, output_zip): # 压缩文件夹
-    with zipfile.ZipFile(output_zip, 'w', zipfile.ZIP_DEFLATED) as zipf:
-        for root, dirs, files in os.walk(folder_path):
-            for file in files:
-                file_path = os.path.join(root, file)
-                zipf.write(file_path, os.path.relpath(file_path, os.path.dirname(folder_path)))
-                #print("ziping...")
 
 def fuzzy_search(name, options): # 实现模糊搜索
     name = name.lower()  # 将输入转换为小写以忽略大小写
@@ -44,7 +37,7 @@ def fuzzy_search(name, options): # 实现模糊搜索
     else:
         return None
 
-def zip_lobotomyCorp(isdefule,output_zip): #压缩LobotomyCorp游戏存档
+def compress_lobotomyCorp(isdefule,output_zip,type): #压缩LobotomyCorp游戏存档
     folder_path = r"C:\Users\luyuc\AppData\LocalLow\Project_Moon" #确定压缩的文件夹
     #判断是否使用默认路径
     if isdefule == False: 
@@ -52,18 +45,23 @@ def zip_lobotomyCorp(isdefule,output_zip): #压缩LobotomyCorp游戏存档
     else: 
         pass
         #output_zip = os.path.normpath(os.path.abspath(output_zip))
-    zip_folder(folder_path, output_zip) #压缩文件
+    if type == '7z':
+        c.compress_to_7z(folder_path, output_zip) #压缩文件为7z
+    elif type == 'zip':
+        c.compress_to_zip(folder_path, output_zip) #压缩文件为zip
     print("Done!")
 
-def zip_libraryOfRuina(isdefule,output_zip): #压缩Library of Ruina游戏存档
+def compress_libraryOfRuina(isdefule,output_zip,type): #压缩Library of Ruina游戏存档
     folder_path = r"C:\Users\luyuc\AppData\LocalLow\Project Moon" #确定压缩的文件夹
     # 判断是否使用默认路径
     if isdefule == True: 
         output_zip = r"C:\Users\luyuc\Desktop\Project Moon.zip"
     else: 
         output_zip = os.path.normpath(os.path.abspath(output_zip))
-    print(output_zip)
-    zip_folder(folder_path, output_zip) #压缩文件
+    if type == '7z':
+        c.compress_to_7z(folder_path, output_zip) #压缩文件为7z
+    elif type == 'zip':
+        c.compress_to_zip(folder_path, output_zip) #压缩文件为zip
     print("Done!")
 
 def is_game_running(): #判断游戏是否在运行
