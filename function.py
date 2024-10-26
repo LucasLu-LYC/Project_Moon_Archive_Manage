@@ -1,8 +1,16 @@
 import os
 import subprocess
-import zipfile
 import psutil
 import compress as c
+import json
+
+def check_json_file(): 
+    if os.path.exists('config.json'):
+        pass
+    else:
+        with open('config.json', 'w') as f:
+            pass
+    
 
 def track_process(process_name):
     print(f"Tracking {process_name} process...")
@@ -40,16 +48,15 @@ def fuzzy_search(name, options): # 实现模糊搜索
 def compress_lobotomyCorp(isdefule,output_zip,type): #压缩LobotomyCorp游戏存档
     folder_path = r"C:\Users\luyuc\AppData\LocalLow\Project_Moon" #确定压缩的文件夹
     #判断是否使用默认路径
-    if isdefule == False: 
-        output_zip = r"C:\\Users\\luyuc\\Desktop\\Project_Moon.zip"
-    else: 
-        pass
-        #output_zip = os.path.normpath(os.path.abspath(output_zip))
+    if isdefule == True: 
+        output_zip = os.getcwd() + r'\text.zip'
+        print("output_zip:",output_zip)
     if type == '7z':
-        c.compress_to_7z(folder_path, output_zip) #压缩文件为7z
+        is_finish = c.compress_to_7z(folder_path, output_zip) #压缩文件为7z
     elif type == 'zip':
-        c.compress_to_zip(folder_path, output_zip) #压缩文件为zip
-    print("Done!")
+        is_finish = c.compress_to_zip(folder_path, output_zip) #压缩文件为zip
+    
+    return is_finish
 
 def compress_libraryOfRuina(isdefule,output_zip,type): #压缩Library of Ruina游戏存档
     folder_path = r"C:\Users\luyuc\AppData\LocalLow\Project Moon" #确定压缩的文件夹
@@ -90,9 +97,9 @@ def auto_archiving(stop): #自动压缩存档
             is_lib_run = True
             is_lib_save = True
         if is_lob_run == False and is_lob_save == True:
-            zip_lobotomyCorp()
+            compress_lobotomyCorp()
             is_lob_save = False
         elif is_lib_run == False and is_lib_save == True:
-            zip_libraryOfRuina()
+            compress_libraryOfRuina()
             is_lib_save = False
 
