@@ -10,7 +10,6 @@ def check_json_file():
     else:
         with open('config.json', 'w') as f:
             pass
-    
 
 def track_process(process_name):
     print(f"Tracking {process_name} process...")
@@ -45,31 +44,23 @@ def fuzzy_search(name, options): # 实现模糊搜索
     else:
         return None
 
-def compress_lobotomyCorp(isdefule,output_zip,type): #压缩LobotomyCorp游戏存档
+def compress_lobotomyCorp(output_zip,type): #压缩LobotomyCorp游戏存档
     folder_path = r"C:\Users\luyuc\AppData\LocalLow\Project_Moon" #确定压缩的文件夹
-    #判断是否使用默认路径
-    if isdefule == True: 
-        output_zip = os.getcwd() + r'\text.zip'
-        print("output_zip:",output_zip)
+    if type == '7z':
+        is_finish = c.compress_to_7z(folder_path, output_zip) #压缩文件为7z
+
+    elif type == 'zip':
+        is_finish = c.compress_to_zip(folder_path, output_zip) #压缩文件为zip
+
+    return is_finish
+
+def compress_libraryOfRuina(output_zip,type): #压缩Library of Ruina游戏存档
+    folder_path = r"C:\Users\luyuc\AppData\LocalLow\Project Moon" #确定压缩的文件夹
     if type == '7z':
         is_finish = c.compress_to_7z(folder_path, output_zip) #压缩文件为7z
     elif type == 'zip':
         is_finish = c.compress_to_zip(folder_path, output_zip) #压缩文件为zip
-    
     return is_finish
-
-def compress_libraryOfRuina(isdefule,output_zip,type): #压缩Library of Ruina游戏存档
-    folder_path = r"C:\Users\luyuc\AppData\LocalLow\Project Moon" #确定压缩的文件夹
-    # 判断是否使用默认路径
-    if isdefule == True: 
-        output_zip = r"C:\Users\luyuc\Desktop\Project Moon.zip"
-    else: 
-        output_zip = os.path.normpath(os.path.abspath(output_zip))
-    if type == '7z':
-        c.compress_to_7z(folder_path, output_zip) #压缩文件为7z
-    elif type == 'zip':
-        c.compress_to_zip(folder_path, output_zip) #压缩文件为zip
-    print("Done!")
 
 def is_game_running(): #判断游戏是否在运行
     try:

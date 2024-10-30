@@ -22,53 +22,62 @@ def save_archive():
     options = ['lobotomycorp', 'libraryofruina']
     gametype = function.fuzzy_search(gametype,options)
     compress_type = input("Please enter the compress type: ")
-    print('gametype:',gametype,' compress_type:',compress_type,' isdefult:',isdefult)
+    archive_name = input("Please enter the archive name: ")
+    print('gametype:',gametype,' compress_type:',compress_type,' archive_name:',archive_name,' isdefult:',isdefult)
     #根据参数进行存档
     if gametype == "lobotomycorp":
         if isdefult == 'y':
             if compress_type == 'zip':
-                function.compress_lobotomyCorp(True,None,'zip')
+                path = os.getcwd() + '/' + archive_name + '.zip'
+                function.compress_lobotomyCorp(path,'zip')
             elif compress_type == '7z':
-                function.compress_lobotomyCorp(True,None,'7z')
+                path = os.getcwd() + '/' + archive_name + '.7z'
+                function.compress_lobotomyCorp(path,'7z')
             else:
                 print("Invalid compress type.")
         else:
-            path = input("Please enter the path of the zip file: ")
+            path = input("Please enter the path of the compress file: ")
             if compress_type == 'zip':
-                function.compress_lobotomyCorp(False,path,'zip')
+                function.compress_lobotomyCorp(path,'zip')
             elif compress_type == '7z':
-                function.compress_lobotomyCorp(False,path,'7z')
+                function.compress_lobotomyCorp(path,'7z')
             else:
                 print("Invalid compress type.")
     
     elif gametype == 'libraryofruina':
         if isdefult == 'y':
-            path = os.getcwd() + r'\text.zip'
             if compress_type == 'zip':
+                path = os.getcwd() + '/' + archive_name + '.zip'
                 function.compress_libraryOfRuina(path,'zip')
             elif compress_type == '7z':
+                path = os.getcwd() + '/' + archive_name + '.7z'
                 function.compress_libraryOfRuina(path,'7z')
             else:
                 print("Invalid compress type.")
         else:
-            path = input("Please enter the path of the zip file: ")
+            path = input("Please enter the path of the comrpess file: ")
             if compress_type == 'zip':
                 function.compress_libraryOfRuina(path,'zip')
             elif compress_type == '7z':
                 function.compress_libraryOfRuina(path,'7z')
             else:
                 print("Invalid compress type.")
-            
-        data = {
+
+    try:
+        with open('config.json', 'r', encoding='utf-8') as old:
+            data = json.load(old)
+    except (FileNotFoundError, json.JSONDecodeError):
+        data = []
+
+    new_data = {
                 'gametype' : gametype,
                 'compress_type' : compress_type,
                 'path' : path,
             }
-        with open('config.json', 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=4)
+    data.append(new_data)
 
-    else:
-        print("Invalid game name.")    
+    with open('config.json', 'w', encoding='utf-8') as new:
+        json.dump(data, new, ensure_ascii=False, indent=4) 
 
 if __name__ == '__main__':
     check()
