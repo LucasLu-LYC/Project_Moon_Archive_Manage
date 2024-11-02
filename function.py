@@ -3,6 +3,45 @@ import subprocess
 import psutil
 import compress as c
 import json
+from pynput import keyboard
+
+is_exit = False
+
+def is_exit_function(key):
+    global is_exit
+    try:
+        while True:
+            if key == keyboard.Key.f12:
+                is_exit = True
+                return True
+            else:
+                is_exit = False
+                return False
+    except:
+        is_exit = False
+        return False
+
+
+def write_data_to_json(gametype, compress_type, path):
+    try:
+        with open('config.json', 'r', encoding='utf-8') as old:
+            data = json.load(old)
+    except (FileNotFoundError, json.JSONDecodeError):
+        data = []
+    if data:
+        last_item = max(data, key=lambda x: x['item'])['item']
+    else:
+        last_item = 0
+    new_data = {
+                'item' : last_item + 1,
+                'gametype' : gametype,
+                'compress_type' : compress_type,
+                'path' : path,
+            }
+    data.append(new_data)
+
+    with open('config.json', 'w', encoding='utf-8') as new:
+        json.dump(data, new, ensure_ascii=False, indent=4) 
 
 def check_json_file(): 
     if os.path.exists('config.json'):
@@ -23,6 +62,17 @@ def track_process(process_name):
         print(f"{process_name} closed.")
     except Exception as e:
         print(f"An error occurred: {e}")
+
+def check_archive_name(name):
+    error_chars = r'<>:"/\\|?*()[{}]'
+    # 检查文件名中是否包含非法字符
+    if any(char in name for char in error_chars):
+        return False
+    if len(name) > 255:
+        return False
+    if (name.startswith('.') or name.startswith(' ') or name.endswith(' ') or name.startswith('/') or name.startswith(':') or name.startswith(';')):
+        return False
+    return True
 
 def fuzzy_search(name, options): # 实现模糊搜索
     name = name.lower()  # 将输入转换为小写以忽略大小写
