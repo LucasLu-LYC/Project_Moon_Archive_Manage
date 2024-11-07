@@ -3,26 +3,8 @@ import subprocess
 import psutil
 import compress as c
 import json
-from pynput import keyboard
 
-is_exit = False
-
-def is_exit_function(key):
-    global is_exit
-    try:
-        while True:
-            if key == keyboard.Key.f12:
-                is_exit = True
-                return True
-            else:
-                is_exit = False
-                return False
-    except:
-        is_exit = False
-        return False
-
-
-def write_data_to_json(gametype, compress_type, path):
+def write_data_to_json(gametype, compress_type, path, archive_name):
     try:
         with open('config.json', 'r', encoding='utf-8') as old:
             data = json.load(old)
@@ -35,6 +17,7 @@ def write_data_to_json(gametype, compress_type, path):
     new_data = {
                 'item' : last_item + 1,
                 'gametype' : gametype,
+                'archive_name' : archive_name,
                 'compress_type' : compress_type,
                 'path' : path,
             }
@@ -49,19 +32,6 @@ def check_json_file():
     else:
         with open('config.json', 'w') as f:
             pass
-
-def track_process(process_name):
-    print(f"Tracking {process_name} process...")
-    try:
-        # 启动进程
-        process = subprocess.Popen(process_name, shell=True)
-        print(f"{process_name} started.")
-        
-        # 等待进程结束
-        process.wait()
-        print(f"{process_name} closed.")
-    except Exception as e:
-        print(f"An error occurred: {e}")
 
 def check_archive_name(name):
     error_chars = r'<>:"/\\|?*()[{}]'
@@ -127,20 +97,24 @@ def is_game_running(): #判断游戏是否在运行
     except:
         print("Error")
         return False
+    
+def delete_json(file_path):
+    try:
+        with open('config.json', 'r', encoding='utf-8') as d:
+            data = json.load(d)
+        for i in data:
+            if i["path"] == file_path:
+                data.remove(i)
+                break
+        with open('config.json', 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)
+        return True
+    except:
+        return False
 
-def auto_archiving(stop): #自动压缩存档
-    while stop == True:
-        running_game = is_game_running()
-        if running_game == 'lob':
-            is_lob_run = True
-            is_lob_save = True
-        elif running_game == 'lib':
-            is_lib_run = True
-            is_lib_save = True
-        if is_lob_run == False and is_lob_save == True:
-            compress_lobotomyCorp()
-            is_lob_save = False
-        elif is_lib_run == False and is_lib_save == True:
-            compress_libraryOfRuina()
-            is_lib_save = False
-
+def delete_file(file_path): #删除文件
+    try:
+        os.remove(file_path)
+        return True
+    except:
+        return False
